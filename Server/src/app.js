@@ -24,4 +24,12 @@ app.get("/api/helth", (req, res) => {
 
 app.use(errorHandler);
 
+app.get("/", (req, res) => {
+  res.send("AI Expense Manager API is running");
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
 module.exports = app;

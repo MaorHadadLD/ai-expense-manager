@@ -1,4 +1,3 @@
-// src/server.js
 const app = require("./app");
 const dotenv = require("dotenv");
 const { prisma } = require("./db");
@@ -13,7 +12,7 @@ async function start() {
     console.log("✅ Connected to database");
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   } catch (err) {
     console.error("❌ Failed to start server:", err);
