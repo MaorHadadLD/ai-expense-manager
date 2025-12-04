@@ -15,6 +15,7 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   expenses     Expense[]
+   incomes      Income[]
 }
 
 model Expense {
@@ -28,3 +29,16 @@ model Expense {
   source      String   @default("manual")
   createdAt   DateTime @default(now())
 }
+
+model Income {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+
+  amount    Float
+  source    String   @default("salary")  
+  date      DateTime
+
+  createdAt DateTime @default(now())
+}
+
