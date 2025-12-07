@@ -5,9 +5,10 @@ const router = express.Router();
 const { createIncome, getIncomes } = require("../controllers/income.controller");
 const authMiddleware = require("../middlewares/authMiddleware");
 
+// כל הראוטים פה מוגנים – חובה טוקן
 router.use(authMiddleware);
 
-router.post("/", createIncome);   // POST /api/incomes
-router.get("/", getIncomes);      // GET  /api/incomes
+router.post("/", createIncome); // POST /api/incomes
+router.get("/", getIncomes);    // GET  /api/incomes
 
 module.exports = router;

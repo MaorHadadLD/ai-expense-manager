@@ -18,8 +18,14 @@ function authMiddleware(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // נשמור את הנתונים על המשתמש ב־req
-    req.user = { userId: decoded.userId };
+
+    // 👈 כאן חייב להיות userId כי ככה בנית את ה־JWT
+    req.user = {
+      userId: decoded.userId,
+      email: decoded.email,
+    };
+
+    console.log("🔹 authMiddleware decoded:", decoded);
     next();
   } catch (err) {
     console.error("❌ authMiddleware error:", err);

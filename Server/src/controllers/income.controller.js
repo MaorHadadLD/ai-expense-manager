@@ -1,9 +1,18 @@
 // src/controllers/income.controller.js
 const { prisma } = require("../db");
 
-exports.createIncome = async (req, res, next) => {
+async function createIncome(req, res, next) {
   try {
-    const userId = req.user.id;
+    console.log("🔹 createIncome req.user:", req.user);
+    console.log("🔹 createIncome body:", req.body);
+
+    // אם אין userId – לא מתקרבים בכלל ל-Prisma
+    if (!req.user || !req.user.userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = req.user.userId; // 👈 זה הקריטי
+
     const { amount, source, date } = req.body;
 
     if (!amount || !date) {
@@ -21,23 +30,34 @@ exports.createIncome = async (req, res, next) => {
       },
     });
 
-    res.status(201).json(income);
+    return res.status(201).json(income);
   } catch (err) {
-    next(err);
+    console.error("❌ Error in createIncome:", err);
+    return next(err);
   }
-};
+}
 
-exports.getIncomes = async (req, res, next) => {
+async function getIncomes(req, res, next) {
   try {
-    const userId = req.user.id;
+    if (!req.user || !req.user.userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = req.user.userId;
 
     const incomes = await prisma.income.findMany({
       where: { userId },
       orderBy: { date: "desc" },
     });
 
-    res.json(incomes);
+    return res.json(incomes);
   } catch (err) {
-    next(err);
+    console.error("❌ Error in getIncomes:", err);
+    return next(err);
   }
+}
+
+module.exports = {
+  createIncome,
+  getIncomes,
 };
