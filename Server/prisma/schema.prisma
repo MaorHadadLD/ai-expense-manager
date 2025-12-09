@@ -8,14 +8,15 @@ generator client {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   name         String
-  email        String    @unique
+  email        String       @unique
   passwordHash String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
   expenses     Expense[]
-   incomes      Income[]
+  incomes      Income[]
+  savingGoals  SavingGoal[]
 }
 
 model Expense {
@@ -30,15 +31,36 @@ model Expense {
   createdAt   DateTime @default(now())
 }
 
-model Incomes {
-  id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
+model Income {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
 
-  amount    Float
-  source    String   @default("salary")  
-  date      DateTime
+  amount Float
+  source String   @default("salary")
+  date   DateTime
 
   createdAt DateTime @default(now())
 }
 
+model SavingGoal {
+  id        Int             @id @default(autoincrement())
+  userId    Int
+  user      User            @relation(fields: [userId], references: [id])
+  name      String
+  target    Float
+  color     String?
+  icon      String?
+  createdAt DateTime        @default(now())
+  deposits  SavingDeposit[]
+}
+
+model SavingDeposit {
+  id     Int        @id @default(autoincrement())
+  goalId Int
+  goal   SavingGoal @relation(fields: [goalId], references: [id])
+
+  incomeId Int?
+  amount   Float
+  date     DateTime @default(now())
+}

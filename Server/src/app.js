@@ -7,6 +7,7 @@ const expensesRoutes = require('./routes/expenses.routes');
 const {errorHandler} = require('./middlewares/errorHandler');
 const authRoutes = require('./routes/auth.routes');
 const incomeRoutes = require("./routes/income.routes");
+const savingsRoutes = require("./routes/savings.routes");
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(morgan('dev'));
 app.use("/api/auth", authRoutes);
 app.use("/api/expenses", expensesRoutes);
 app.use("/api/incomes", incomeRoutes);
+app.use("/api/savings", savingsRoutes);
 
 app.get("/api/helth", (req, res) => {
     res.status(200).json({ message: "Server is healthy" });
