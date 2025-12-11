@@ -205,9 +205,116 @@ async function addSavingDeposit(req, res, next) {
   }
 }
 
+// מחיקת קופת חיסכון + כל ההפקדות שלה
+async function deleteSavingGoal(req, res, next) {
+  try {
+    const userId = req.user?.userId;
+    const goalId = parseInt(req.params.id, 10);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // מוודאים שהקופה שייכת למשתמש
+    const goal = await prisma.savingGoal.findFirst({
+      where: { id: goalId, userId },
+    });
+
+    if (!goal) {
+      return res.status(404).json({ message: "Saving goal not found" });
+    }
+
+    // מוחקים קודם את ההפקדות שלה
+    await prisma.savingDeposit.deleteMany({
+      where: { goalId: goal.id },
+    });
+
+    // עכשיו מוחקים את הקופה
+    await prisma.savingGoal.delete({
+      where: { id: goal.id },
+    });
+
+    return res.status(204).send(); // אין גוף
+  } catch (err) {
+    next(err);
+  }
+}
+
+// עריכת קופת חיסכון (כרגע: שם בלבד)
+async function updateSavingGoal(req, res, next) {
+  try {
+    const userId = req.user?.userId;
+    const goalId = parseInt(req.params.id, 10);
+    const { name } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    if (!name) {
+      return res.status(400).json({ message: "name is required" });
+    }
+
+    // מוודאים שהקופה שייכת למשתמש
+    const goal = await prisma.savingGoal.findFirst({
+      where: { id: goalId, userId },
+    });
+
+    if (!goal) {
+      return res.status(404).json({ message: "Saving goal not found" });
+    }
+
+    const updated = await prisma.savingGoal.update({
+      where: { id: goal.id },
+      data: { name },
+    });
+
+    return res.json(updated);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// מחיקת הפקדה בודדת
+async function deleteSavingDeposit(req, res, next) {
+  try {
+    const userId = req.user?.userId;
+    const depositId = parseInt(req.params.depositId, 10);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const deposit = await prisma.savingDeposit.findUnique({
+      where: { id: depositId },
+      include: {
+        goal: true, // כדי לוודא שההפקדה שייכת למשתמש
+      },
+    });
+
+    if (!deposit || deposit.goal.userId !== userId) {
+      return res.status(404).json({ message: "Deposit not found" });
+    }
+
+    await prisma.savingDeposit.delete({
+      where: { id: deposit.id },
+    });
+
+    return res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+}
+
+
+
+
 module.exports = {
   createSavingGoal,
   getSavingGoals,
   getSavingGoalById,
   addSavingDeposit,
+  deleteSavingGoal,
+  updateSavingGoal,
+  deleteSavingDeposit,
 };

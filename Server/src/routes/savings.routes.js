@@ -8,19 +8,32 @@ const {
   getSavingGoals,
   getSavingGoalById,
   addSavingDeposit,
+  updateSavingGoal,      // ✅
+  deleteSavingGoal,      // ✅
+  deleteSavingDeposit,   // ✅
 } = require("../controllers/savings.controller");
 
 router.use(authMiddleware);
 
+// יצירת קופה
 router.post("/", createSavingGoal);
 
+// כל הקופות
 router.get("/", getSavingGoals);
 
+// פרטי קופה
 router.get("/:id", getSavingGoalById);
 
+// הפקדה לקופה
 router.post("/:id/deposits", addSavingDeposit);
 
-// router.post("/goals/:id/deposits", createSavingDeposit);
+// עדכון קופה (שם כרגע)
+router.patch("/:id", updateSavingGoal);
 
+// מחיקת קופה
+router.delete("/:id", deleteSavingGoal);
+
+// מחיקת הפקדה
+router.delete("/deposits/:depositId", deleteSavingDeposit);
 
 module.exports = router;
